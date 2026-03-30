@@ -49,7 +49,7 @@ title: "{{ topic.name }}"
 
 <div class="course">
 <p>
-      <a href="{{ course.url }}">
+      <a href="{{ course.url | url }}">
         <img
           src="{{ '/images/' | url }}{{ course.data.image }}"
           alt="{{ course.data.title }}"
