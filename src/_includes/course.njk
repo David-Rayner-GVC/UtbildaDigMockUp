@@ -1,0 +1,15 @@
+---
+layout: base.njk
+---
+
+<h1>{{ title }}</h1>
+
+<p><strong>Provider:</strong> {{ provider }}</p>
+<p><strong>Level:</strong> {{ level }}</p>
+<p><strong>Topics:</strong> {{ topics | join(", ") }}</p>
+<p><strong>Summary:</strong> {{ summary }}</p>
+
+{% if content %}
+  <hr>
+  {{ content | safe }}
+{% endif %}
