@@ -116,7 +116,7 @@ Here you will find a selection of courses about research data management and rel
     <div class="topic-course-grid">
     {% for course in topic.courses %}
       <div class="course-card">
-      <a href="{{ course.url }}">
+      <a href="{{ course.url | url }}">
         <img
           src="{{ '/images/' | url }}{{ course.data.image }}"
           alt="{{ course.data.title }}"
@@ -132,7 +132,7 @@ Here you will find a selection of courses about research data management and rel
       </div>
       <div class="course-content">
        <h3>
-        <a href="{{ course.url }}">{{ course.data.title }}</a>
+        <a href="{{ course.url | url }}">{{ course.data.title }}</a>
        </h3>
        <p class="course-summary">
        {{ course.data.summary | truncate: 120 }}
