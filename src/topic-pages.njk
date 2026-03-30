@@ -3,7 +3,7 @@ pagination:
   data: collections.topics
   size: 1
   alias: topic
-permalink: "/topics/{{ topic.slug }}/index.html"
+permalink: "{{ '/topics/' | url }}{{ topic.slug }}/index.html" 
 layout: base.njk
 title: "{{ topic.name }}"
 ---
@@ -51,7 +51,7 @@ title: "{{ topic.name }}"
 <p>
       <a href="{{ course.url }}">
         <img
-          src="/images/{{ course.data.image }}"
+          src="{{ '/images/' | url }}{{ course.data.image }}"
           alt="{{ course.data.title }}"
         >
       </a>

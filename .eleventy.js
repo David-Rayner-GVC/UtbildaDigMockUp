@@ -1,8 +1,10 @@
 const { RenderPlugin } = require("@11ty/eleventy");
 
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addPlugin(RenderPlugin);
+  const isProd = process.env.ELEVENTY_ENV === "production";
+  const repoName = "UtbildaDigMockUp";
 
+  eleventyConfig.addPlugin(RenderPlugin);
   eleventyConfig.addPassthroughCopy("src/images");
 
   eleventyConfig.addCollection("topics", function(collectionApi) {
@@ -33,6 +35,7 @@ module.exports = function(eleventyConfig) {
   });
 
   return {
+    pathPrefix: isProd ? `/${repoName}/` : "/",
     dir: {
       input: "src",
       output: "_site"
