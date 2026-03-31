@@ -17,7 +17,7 @@ summary: >
     - Identify appropriate storage and backup solutions.
     - Become familiar with open science principles, understand the benefits and risks of data sharing and different levels of openness.
     - Recognise the requirements for long-term preservation of research data.
-permalink: 
+permalink: /courses/data-steward-fair/
 homepage: https://www.tuni.fi/en/study-with-us/data-steward-fair-research-data-life-cycle-module-3?navref=curated--grid
 ---
 

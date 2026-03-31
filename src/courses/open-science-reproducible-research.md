@@ -3,7 +3,7 @@ layout: course.njk
 tags: courses
 title: Open Science and Reproducible Research
 image: ki_logo_145.png
-provider: CSC - IT Center for Science Ltd.
+provider: Karolinska Institutet.
 level: Postgraduate
 topics:
   - Open Science
@@ -19,7 +19,7 @@ summary: >
     - Observed statistical power and implications for inference
     - Open science from a low-and middle income country (LMIC) perspective
     - Initiatives to improve research transparency and reproducibility
-permalink: 
+permalink: /courses/open-science-reproducible-research/
 homepage: https://doctoralcourses.application.ki.se/fubasextern/info?kurs=K8F6069
 ---
 
