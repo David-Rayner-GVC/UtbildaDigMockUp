@@ -6,8 +6,8 @@ image: data-steward-fair.jpg
 provider: Tampere University
 level: Postgraduate
 topics:
-  - FAIR
-  - Research data management
+  - fair-data
+  - research-data-management
 summary: >
   This module introduces the key stages of the research data life cycle and how to manage data effectively throughout a research project. It covers
     - Recognise the phases of the research data lifecycle.

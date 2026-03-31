@@ -1,4 +1,7 @@
 const { RenderPlugin } = require("@11ty/eleventy");
+const yaml = require("js-yaml");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = function(eleventyConfig) {
   const isProd = process.env.ELEVENTY_ENV === "production";
@@ -9,29 +12,29 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addCollection("topics", function(collectionApi) {
     const courses = collectionApi.getFilteredByTag("courses");
-    const topicsMap = new Map();
 
-    for (const course of courses) {
-      const topics = course.data.topics || [];
+    const topicsPath = path.join(__dirname, "src", "_data", "topics.yml");
+    const topicDefs = yaml.load(fs.readFileSync(topicsPath, "utf8"));
 
-      for (const topic of topics) {
-        if (!topicsMap.has(topic)) {
-          topicsMap.set(topic, []);
-        }
-        topicsMap.get(topic).push(course);
-      }
-    }
+    return topicDefs
+      .map((topic) => {
+        const topicCourses = courses.filter((course) => {
+          const courseTopics = course.data.topics || [];
+          return courseTopics.includes(topic.id);
+        });
 
-    return Array.from(topicsMap.entries())
-      .map(([name, courses]) => ({
-        name,
-        slug: name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, ""),
-        courses
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+        return {
+          id: topic.id,
+          slug: topic.id,
+          name: topic.name,
+          summary: topic.summary,
+          image: topic.image,
+          order: topic.order || 999,
+          courses: topicCourses
+        };
+      })
+      /* .filter((topic) => topic.courses.length > 0) */
+      .sort((a, b) => a.order - b.order);
   });
 
   return {

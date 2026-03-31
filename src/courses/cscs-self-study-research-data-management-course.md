@@ -6,8 +6,8 @@ image: cscs-self-study-research-data-management-course.jpg
 provider: CSC - IT Center for Science Ltd.
 level: beginner
 topics:
-  - FAIR
-  - Research data management
+  - fair-data
+  - research-data-management
 summary: >
   Anyone interested in the data management is welcome to learn about it on CSC’s self-study Research Data Management course on our eLearning platform!
   The course covers the basics of data management and gathers resources and tools available for different stages.

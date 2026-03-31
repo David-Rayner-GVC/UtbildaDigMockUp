@@ -6,7 +6,7 @@ image: ki_logo_145.png
 provider: Karolinska Institutet
 level: Undergraduate, Postgraduate
 topics:
-  - Research data management
+  - research-data-management
 summary: >
   The course will cover many aspects of research documentation and data handling.
     - Plan your research data management

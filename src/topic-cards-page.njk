@@ -1,0 +1,84 @@
+---
+title: Browse by topic
+layout: base.njk
+permalink: /topic-cards/
+---
+
+<h1>Browse by topic</h1>
+<p>Select a topic to see available courses.</p>
+<hr>
+
+<style>
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 2rem;
+}
+
+.topic-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: block;
+}
+
+.topic-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.topic-card img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #eee;
+}
+
+.topic-card-content {
+  padding: 1rem;
+}
+
+.topic-card-content h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+}
+
+.topic-card-content p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1000px) {
+  .topic-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .topic-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div class="topic-grid">
+  {% for topic in collections.topics %}
+    <a class="topic-card" href="{{ ('/topics/' + topic.id + '/') | url }}">
+      <img
+        src="{{ '/images/' | url }}{{ topic.image }}"
+        alt="{{ topic.name }}"
+      >
+      <div class="topic-card-content">
+        <h2>{{ topic.name }}</h2>
+        <p>{{ topic.summary }}</p>
+      </div>
+    </a>
+  {% endfor %}
+</div>
