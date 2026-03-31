@@ -18,12 +18,20 @@ Here you will find a selection of courses about research data management and rel
 
 .course-card {
   width: 300px;
+  height: 430px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  display: block;
+  background: white;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.course-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  overflow-y: auto;
 }
 
 .course-card img {
@@ -31,62 +39,8 @@ Here you will find a selection of courses about research data management and rel
   width: 300px;
   height: 200px;
   object-fit: contain;
-  background-color: #eee; /* optional, fills empty space */
+  background-color: #eee;
 }
-
-/* overlay */
-.course-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-  padding: 1rem;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-.course-card:hover .course-overlay {
-  opacity: 1;
-}
-
-.course-overlay h3 {
-  margin-top: 0;
-}
-
-.course-overlay {
-  overflow-y: auto;
-}
-
-.course-title {
-  padding: 0.75rem 1rem;
-}
-
-.course-title a {
-  color: #5af4ff; /* Light blue for contrast */
-  text-decoration: underline; /* Always underline */
-  font-weight: bold; /* Optional: adds extra visibility */
-}
-
-.course-overlay a {
-  color: #5af4ff; /* Light blue for contrast */
-  text-decoration: underline; /* Always underline */
-  font-weight: bold; /* Optional: adds extra visibility */
-}
-
-.course-overlay a:hover {
-  color: #ffffff; /* White on hover for high contrast */
-  text-decoration: none; /* Remove underline on hover if preferred */
-}
-
-.course-overlay a:visited {
-  color: #ceb3f2; /* A lighter or distinct purple-blue */
-}
-
 .course-content {
   padding: 0.75rem 1rem 1rem 1rem;
 }
@@ -96,15 +50,22 @@ Here you will find a selection of courses about research data management and rel
   font-size: 1.1rem;
 }
 
-.course-content a {
+.course-content h3 a {
   text-decoration: none;
   color: inherit;
 }
 
+.course-content p {
+  margin: 0 0 0.5rem 0;
+}
+
 .course-summary {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 0;
+  font-size: 0.95rem;
+}
+
+.course-summary ul,
+.course-summary ol {
+  padding-left: 1.25rem;
 }
 </style>
 
@@ -116,31 +77,22 @@ Here you will find a selection of courses about research data management and rel
     <div class="topic-course-grid">
     {% for course in topic.courses %}
       <div class="course-card">
-      <a href="{{ course.url | url }}">
+       <a href="{{ course.url | url }}">
         <img
           src="{{ '/images/' | url }}{{ course.data.image }}"
           alt="{{ course.data.title }}"
         >
-      </a>
+       </a>
 
-      <div class="course-overlay">
-        <h3><a href="{{ course.data.homepage }}">{{ course.data.title }}</a></h3>
-        <p><strong>Provider:</strong> {{ course.data.provider }}</p>
-        <p><strong>Level:</strong> {{ course.data.level }}</p>
-        <p>{{ course.data.summary}}</p>
-        <p><strong><a href="{{ course.data.homepage }}">Link to Course Homepage</a></strong></p>
+       <div class="course-content">  
+        <p><a href="{{ course.data.homepage }}"><strong>{{ course.data.title }}</strong></a></p>
+        {{ course.data.summary | renderContent: "md" }}
+        <p><em>Provider:</em> {{ course.data.provider }}<br></p>
+        <p><em>Level:</em> {{ course.data.level }}</p>
+       </div>
       </div>
-      <div class="course-content">
-       <h3>
-        <a href="{{ course.url | url }}">{{ course.data.title }}</a>
-       </h3>
-       <p class="course-summary">
-       {{ course.data.summary | truncate: 120 }}
-       </p>
-     </div>
-     </div>
     {% endfor %}
-    
+   </div> 
   </section>
   <hr>
 {% endfor %}
