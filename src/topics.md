@@ -12,7 +12,7 @@ Here you will find a selection of courses about research data management and rel
 
 .topic-course-grid {
   display: grid;
-  background: rgba(255, 0, 0, 0.1);
+
   grid-template-columns: repeat(3, 300px);
   gap: 20px;
   margin-bottom: 2rem;
