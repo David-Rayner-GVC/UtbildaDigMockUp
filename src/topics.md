@@ -9,23 +9,19 @@ Here you will find a selection of courses about research data management and rel
 <hr>
  
 <style>
-.topic-course-grid{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 2rem;
-}
 
-.topic-course-grid-try {
+.topic-course-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  background: rgba(255, 0, 0, 0.1);
+  grid-template-columns: repeat(3, 300px);
   gap: 20px;
   margin-bottom: 2rem;
+  justify-content: start;
 }
 
 
 .course-card {
-  width: 300px;
+  width: 100%;
   height: 430px;
   box-sizing: border-box;
   border: 1px solid #ccc;
@@ -100,25 +96,24 @@ Here you will find a selection of courses about research data management and rel
     <!-- <p>{{ topic.courses.length }} course{% if topic.courses.length != 1 %}s{% endif %}</p> -->
 
     <div class="topic-course-grid">
-    {% for course in topic.courses %}
+    {%- for course in topic.courses -%}
       <div class="course-card">
-      
-       <a href="{{ course.url | url }}">
-        <img
-          src="{{ '/images/' | url }}{{ course.data.image }}"
-          alt="{{ course.data.title }}"
-        >
-       </a>
+        <a href="{{ course.url | url }}">
+          <img
+            src="{{ '/images/' | url }}{{ course.data.image }}"
+            alt="{{ course.data.title }}"
+          >
+        </a>
 
-        <div class="course-content">  
-        <p><a href="{{ course.data.homepage }}"><strong>{{ course.data.title }}</strong></a></p>
-        {{ course.data.summary | renderContent: "md" }}
-        <p><em>Provider:</em> {{ course.data.provider }}<br></p>
-        <p><em>Level:</em> {{ course.data.level }}</p>
-       </div>
+        <div class="course-content">
+          <p><a href="{{ course.data.homepage }}"><strong>{{ course.data.title }}</strong></a></p>
+          {{ course.data.summary | renderContent: "md" }}
+          <p><em>Provider:</em> {{ course.data.provider }}<br></p>
+          <p><em>Level:</em> {{ course.data.level }}</p>
+        </div>
       </div>
-    {% endfor %}
-   </div> 
+    {%- endfor -%}
+    </div>
   </section>
   <hr>
 {% endfor %}
