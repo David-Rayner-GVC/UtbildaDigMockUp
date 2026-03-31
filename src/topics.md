@@ -7,18 +7,27 @@ permalink: /topics/
 # Utbilda dig!
 Here you will find a selection of courses about research data management and related topics.
 <hr>
-
+ 
 <style>
-.topic-course-grid {
+.topic-course-grid{
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 2rem;
 }
 
+.topic-course-grid-try {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 2rem;
+}
+
+
 .course-card {
   width: 300px;
   height: 430px;
+  box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow-y: hidden;
@@ -36,8 +45,7 @@ Here you will find a selection of courses about research data management and rel
 
 .course-card img {
   display: block;
-  width: 300px;
-  height: 200px;
+  width: 100%;
   object-fit: contain;
   background-color: #eee;
 }
@@ -67,6 +75,23 @@ Here you will find a selection of courses about research data management and rel
 .course-summary ol {
   padding-left: 1.25rem;
 }
+@media (max-width: 1000px) {
+  .topic-course-grid {
+    grid-template-columns: repeat(2, 300px);
+    justify-content: start;
+  }
+}
+
+@media (max-width: 650px) {
+  .topic-course-grid {
+    grid-template-columns: 1fr;
+    justify-content: start;
+  }
+
+  .course-card {
+    width: 100%;
+  }
+}
 </style>
 
 {% for topic in collections.topics %}
@@ -77,6 +102,7 @@ Here you will find a selection of courses about research data management and rel
     <div class="topic-course-grid">
     {% for course in topic.courses %}
       <div class="course-card">
+      
        <a href="{{ course.url | url }}">
         <img
           src="{{ '/images/' | url }}{{ course.data.image }}"
@@ -84,7 +110,7 @@ Here you will find a selection of courses about research data management and rel
         >
        </a>
 
-       <div class="course-content">  
+        <div class="course-content">  
         <p><a href="{{ course.data.homepage }}"><strong>{{ course.data.title }}</strong></a></p>
         {{ course.data.summary | renderContent: "md" }}
         <p><em>Provider:</em> {{ course.data.provider }}<br></p>

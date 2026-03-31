@@ -7,7 +7,7 @@
 - id: fair-data
   name: FAIR Data
   summary: Courses about making research data findable, accessible, interoperable, and reusable.
-  image: topic-fair.jpg
+  image: fair-data-intro.jpg
   order: 2
 
 - id: research-data-management
