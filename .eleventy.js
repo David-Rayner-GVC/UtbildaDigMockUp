@@ -17,6 +17,10 @@ module.exports = function(eleventyConfig) {
     const topicDefs = yaml.load(fs.readFileSync(topicsPath, "utf8"));
 
     return topicDefs
+      .filter((topic) => {
+        // visible defaults to true if omitted
+        return ![false, 0, "0", "false"].includes(topic.visible);
+      })
       .map((topic) => {
         const topicCourses = courses.filter((course) => {
           const courseTopics = course.data.topics || [];
@@ -29,12 +33,13 @@ module.exports = function(eleventyConfig) {
           name: topic.name,
           summary: topic.summary,
           image: topic.image,
-          order: topic.order || 999,
+          visible: topic.visible,
           courses: topicCourses
         };
-      })
-      /* .filter((topic) => topic.courses.length > 0) */
-      .sort((a, b) => a.order - b.order);
+      });
+      /* optionally add:
+      .filter((topic) => topic.courses.length > 0)
+      */
   });
 
   return {

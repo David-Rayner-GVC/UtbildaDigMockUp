@@ -2,22 +2,23 @@
   name: Biodiversity
   summary: Learn to manage and document species observations for GBIF.
   image: topic-biodiversity.jpg
-  order: 1
+  visible: true
 
 - id: fair-data
   name: FAIR Data
   summary: Courses about making research data findable, accessible, interoperable, and reusable.
   image: fair-data-intro.jpg
-  order: 2
+  visible: true
 
 - id: research-data-management
   name: Research data management
   summary: Courses about how to manage research data effectively throughout a research project.
   image: topic-rdm.jpg
-  order: 3
+  visible: true
 
 - id: open-science
   name: Open Science
   summary: Open science means that everyone has free and open access to scientific texts, research results and research data.
   image: topic-open-science.jpg
-  order: 4
+  visible: true
+  
