@@ -1,0 +1,23 @@
+[
+  {
+    "id":"fair-data", 
+    "terms":["FAIR","FAIR Data", "data publishing", "publish data", "share data", "data sharing", "dela data"]
+  }, {
+    "id":"research-data-management", 
+    "terms":["rmd","Research data management"]
+  }, {
+    "id":"open-science", 
+    "terms":["Open Science","öppen vetenskap"]
+  }, {
+    "id":"data-magement-plans", 
+    "terms":["Data management plans","DMP","DMPs"]
+  }, {
+    "id":"personal-data", 
+    "terms":["Personal data","Personal information","Personuppgifter"]
+  }, {
+    "id":"reproducible-research",
+    "terms":["Reproducible research"]
+  }
+]
+
+ 

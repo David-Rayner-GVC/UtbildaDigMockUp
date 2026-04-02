@@ -7,6 +7,7 @@ provider: Karolinska Institutet.
 level: Postgraduate
 topics:
   - open-science
+  - reproducible-research
 summary: >
   The course covers:
     - Introduction to the "reproducibility crisis"
