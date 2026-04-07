@@ -1,12 +1,13 @@
-# Project Summary: Eleventy Course Catalog Demo (Updated)
+# Project Summary: Eleventy Course Catalog Demo (Updated with Harvesting)
 
 ## Goal
 
 Build a **static, collaborative course catalog** using:
 
-- YAML-based course and topic metadata
-- Eleventy (11ty) for site generation
-- GitHub Pages for free hosting and collaboration
+* YAML-based course and topic metadata
+* Eleventy (11ty) for site generation
+* GitHub Pages for free hosting and collaboration
+* External course ingestion via API (NEW)
 
 ---
 
@@ -14,14 +15,15 @@ Build a **static, collaborative course catalog** using:
 
 ### Tech stack
 
-- **Eleventy (11ty)** static site generator
-- **Node.js / npm**
-- **GitHub Pages via GitHub Actions**
+* **Eleventy (11ty)** static site generator
+* **Node.js / npm**
+* **GitHub Pages via GitHub Actions**
+* **Python (NEW)** for harvesting and transforming external course data
 
 Templates:
 
-- `.md` → Markdown + Liquid
-- `.njk` → Nunjucks
+* `.md` → Markdown + Liquid
+* `.njk` → Nunjucks
 
 ---
 
@@ -31,26 +33,35 @@ Templates:
 project-root/
   src/
     index.md
-    topics.md                # topic → course view
-    topic-cards-page.njk     # topic card overview (new entry point)
-    topic-pages.njk          # one page per topic
+    topics.md
+    topic-cards-page.njk
+    topic-pages.njk
+    courses.md               # only used for troubleshooting
 
     courses/
-      *.md                   # one file per course (YAML front matter)
+      *.md                   # manually curated courses
+      SciLifeLab/            # generated courses (NEW)
 
     _data/
-      topics.yml             # central topic definitions (NEW)
+      topics.yml
 
     images/
-      *.jpg / *.jpeg
+      *.jpg / *.jpeg / *.png
 
     _includes/
       base.njk
       course.njk
 
+  scripts/                  # NEW
+    import_scilifelab.py
+    TopicMapper.py
+    defaults.py
+
+    _data/
+      mappings.json
+
   .eleventy.js
   package.json
-  package-lock.json
   .github/workflows/deploy.yml
 ```
 
@@ -58,7 +69,7 @@ project-root/
 
 ## Data Model
 
-### Topics (NEW: centralized)
+### Topics
 
 Defined in:
 
@@ -66,27 +77,22 @@ Defined in:
 src/_data/topics.yml
 ```
 
-Each topic:
+Changes:
+
+* `order` field removed → ordering now defined by file position
+* `visible` field added → controls whether topic appears in catalog
 
 ```yaml
 - id: fair-data
   name: FAIR Data
-  summary: Courses about making research data findable, accessible, interoperable, and reusable.
-  image: topic-fair.jpg
-  order: 2
+  visible: true
 ```
-
-**Key design decision:**
-- `id` is the single source of truth
-- `id` is used for:
-  - course references
-  - URL slug (`/topics/{id}/`)
 
 ---
 
 ### Courses
 
-Each course file contains:
+Still one file per course:
 
 ```yaml
 ---
@@ -97,197 +103,222 @@ provider: ...
 level: ...
 topics:
   - fair-data
-  - research-data-management
 summary: |
-  Multi-line markdown
+  ...
 image: filename.jpg
 homepage: https://...
 permalink: /courses/course-slug/
 ---
 ```
 
-**Important change:**
-- `topics` now uses **topic IDs**, not names
+Now includes both:
+
+* manually curated courses
+* automatically harvested courses (NEW) in subfolders
+
+---
+
+## NEW: Harvesting Pipeline
+
+### Overview
+
+External course data (currently from SciLifeLab) is:
+
+1. **Fetched** from a JSON API
+2. **Transformed** into the internal course schema
+3. **Enriched** (topics mapped, images can be downloaded, though not currently used)
+4. **Written** as Markdown files into:
+
+   ```text
+   src/courses/SciLifeLab/
+   ```
+5. Included automatically in Eleventy build
+
+---
+
+### Pipeline Steps
+
+#### 1. fetch_courses
+
+* Uses `requests`
+* Retrieves JSON from API endpoint
+* Minimal logic (no transformation)
+
+#### 2. transform_course
+
+* Maps API fields → Eleventy front matter
+* Normalizes text (e.g. line endings)
+* Extracts:
+
+  * title
+  * provider(s)
+  * summary
+  * level
+  * homepage
+* Uses **TopicMapper** to map keywords → topic IDs
+
+Courses without mapped topics are filtered out
+
+---
+
+#### 3. Topic Mapping (NEW)
+
+Mapping defined in:
+
+```text
+scripts/mappings.json
+```
+
+Structure:
+
+```json
+{
+  "id": "fair-data",
+  "terms": ["FAIR", "data sharing"]
+}
+```
+
+Handled by a Python class:
+
+* Loads mapping file
+* Matches keywords (case-insensitive)
+* Returns list of topic IDs
+
+---
+
+#### 4. Image Handling (NEW)
+
+* Checks if image exists locally (`src/images/`)
+* Downloads if missing
+* Avoids re-downloading on subsequent builds
+
+---
+
+#### 5. write_course
+
+* Writes `.md` files with YAML front matter
+* Ensures consistent key ordering
+* Uses `yaml.dump(..., sort_keys=False)`
+* Outputs to:
+
+  ```text
+  src/courses/SciLifeLab/
+  ```
+
+---
+
+### Build Integration
+
+GitHub Actions workflow:
+
+1. Checkout repo
+2. Setup Python
+3. Run harvesting script
+4. Run Eleventy build
+5. Deploy `_site/`
 
 ---
 
 ## Collections
 
-### Topics collection (updated)
+### Topics collection
 
-Defined in `.eleventy.js`
-
-- Reads topic definitions from `topics.yml`
-- Matches courses by `topic.id`
-- Returns:
-  - id
-  - name
-  - summary
-  - image
-  - order
-  - slug (= id)
-  - courses[]
+* Reads `topics.yml`
+* Filters on `visible`
+* Matches courses by topic ID
+* Includes both manual and harvested courses
 
 ---
 
-## Key Features
+## Key Features (Updated)
 
-### 1. Course system
+### 1. Hybrid course system
 
-- One file per course
-- Auto-generated:
-  - individual course pages
-  - course listings
+* Manual + auto-generated courses coexist
+* Same schema and templates
 
 ---
 
-### 2. Topic system (refactored)
+### 2. External data ingestion
 
-- Topics defined centrally (not inferred from courses)
-- Stable IDs prevent breakage when renaming topics
-- Pages:
-  - `/topics/` → courses grouped by topic
-  - `/topics/{id}/` → per-topic pages
+* API-driven content updates
+* No manual duplication
+* Clean separation between:
 
----
-
-### 3. Topic card entry page (NEW)
-
-- `/topic-cards/`
-- Displays one card per topic
-- Each card includes:
-  - image
-  - title
-  - summary
-- Click → topic page
+  * source data
+  * transformed content
 
 ---
 
-### 4. Card-based UI
+### 3. Topic mapping layer
 
-#### Course cards
-
-- Fixed width (300px)
-- Fixed height (~430px)
-- Scroll on hover
-- Markdown-rendered summaries
-
-#### Topic cards
-
-- Grid layout (max 3 columns)
-- Responsive (3 → 2 → 1 columns)
+* Decouples external vocabularies from internal taxonomy
+* Easily extensible for new providers
 
 ---
 
-## Layout & Styling
+### 4. Image caching (not currently used)
 
-### Grid fixes (important lesson)
-
-- Use **consistent sizing between grid and cards**
-- Avoid mixing `1fr` with fixed-width cards
-
-### Key solution
-
-```css
-.topic-course-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 300px);
-  gap: 20px;
-  justify-content: start;
-}
-```
-
----
-
-### Critical fix: Nunjucks whitespace control
-
-Using:
-
-```njk
-{%- for course in topic.courses -%}
-...
-{%- endfor -%}
-```
-
-Prevents stray whitespace nodes becoming grid items.
-
-**Without this → broken layouts ("checkerboard" behavior).**
-
----
-
-### Base layout
-
-```njk
-{{ content | safe }}
-```
-
-- Injects rendered page HTML
-- Prevents HTML escaping
+* Avoids repeated downloads
+* Keeps static assets local
 
 ---
 
 ## GitHub Pages Setup
 
-### Deployment
+### Important update
 
-- GitHub Actions builds `_site/`
-- Deploys automatically
-
-### Path handling
+Eleventy now ignores `.gitignore`:
 
 ```js
-pathPrefix: isProd ? "/REPO-NAME/" : "/"
+eleventyConfig.setUseGitIgnore(false);
 ```
 
-All internal links use:
+This allows:
 
-```njk
-{{ '/topics/' | url }}
-```
+* Git to ignore generated files
+* Eleventy to still process them
 
 ---
 
 ## Key Lessons / Gotchas (Updated)
 
-### 1. Separate content from structure
+### 1. Git ignore affects Eleventy
 
-- Topics should be defined centrally
-- Courses reference topics via IDs
-
----
-
-### 2. Avoid duplicated identifiers
-
-- Use `id` only (no separate slug needed)
+* `.gitignore` can hide source files from Eleventy
+* Must disable via config when generating content
 
 ---
 
-### 3. Grid + fixed width must match
+### 2. Separate pipeline responsibilities
 
-- Do not mix `1fr` columns with fixed-width cards
-
----
-
-### 4. Nunjucks whitespace matters in grids
-
-- Use `{%- -%}` to avoid invisible grid items
+* Fetch ≠ transform ≠ write
+* Keep side effects (downloads) isolated
 
 ---
 
-### 5. Liquid vs Nunjucks syntax
+### 3. Stable identifiers matter
 
-- `.md` → Liquid → `| filter: arg`
-- `.njk` → Nunjucks → `| filter(arg)`
+* Use IDs (not titles) for:
+
+  * slugs
+  * filenames
+  * topic references
 
 ---
 
-### 6. `permalink` must NOT use `url` filter
+### 4. Normalize external data early
+
+* Line endings
+* provider lists
+* missing fields
 
 ---
 
-### 7. Image handling
+### 5. Filter aggressively
 
-- Explicit `image:` field required
+* Exclude courses without valid topic mappings
+* Keeps catalog clean
 
 ---
 
@@ -295,37 +326,40 @@ All internal links use:
 
 Working:
 
-- Local dev (`npm start`)
-- Production build + deploy
-- Topic card entry page
-- Topic pages
-- Course pages
-- Centralized topic system
-- Stable topic IDs
-- Clean grid layout (fixed + responsive)
+* Local dev (`npm start`)
+* Production build + deploy
+* Topic system with visibility control
+* External harvesting pipeline
+* Topic mapping
+* Image downloading + caching
+* Generated courses integrated into collections
 
 ---
 
-## Next Steps (Updated Priorities)
+## Next Steps (Updated)
 
 ### High impact
 
-- Filtering (topic, level, provider)
-- Sorting
+* Filtering (topic, level, provider)
+* Search
 
 ### Medium
 
-- Improve homepage (highlight topics)
-- Add fallback images
+* Improve homepage
+* Handle missing images gracefully
 
 ### Longer-term
 
-- Contribution workflow
-- Lightweight search
+* Support multiple providers
+* Scheduled harvesting
+* Contribution workflow
+* Smarter topic matching (fuzzy / NLP)
 
 ---
 
 ## One-line description
 
-> Static course catalog built with Eleventy using YAML-driven topics and courses, with topic-based navigation and GitHub Pages deployment.
+> Static course catalog built with Eleventy, combining manually curated and automatically harvested courses via a Python ingestion pipeline, with YAML-driven topics and GitHub Pages deployment.
+
+---
 
