@@ -18,7 +18,7 @@ summary: >
     - Process, analyze and share research data
     - Make research data available
     - Preserve, archive and report research data
-permalink: /courses/biodiversity-basics/research-documentation-and-handling-of-research-data/
+permalink: /courses/research-documentation-and-handling-of-research-data/
 homepage: https://ki.instructure.com/courses/4158
 ---
 

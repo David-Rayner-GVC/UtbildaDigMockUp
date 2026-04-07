@@ -9,6 +9,7 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPlugin(RenderPlugin);
   eleventyConfig.addPassthroughCopy("src/images");
+  eleventyConfig.setUseGitIgnore(false);
 
   eleventyConfig.addCollection("topics", function(collectionApi) {
     const courses = collectionApi.getFilteredByTag("courses");
