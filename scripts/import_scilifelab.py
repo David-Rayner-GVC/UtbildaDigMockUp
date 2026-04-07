@@ -8,9 +8,13 @@ from urllib.parse import urlparse
 
 import yaml
 
+# url to harvest metadata for all courses
 HARVEST_URL = "https://training.scilifelab.se/events.json"
-USE_PROVIDER = -1
 
+# There can be multiple providers each with their own image, but
+# we can only use one. This is the index to use (-1 is last, 0 is first)
+# THIS IS NOT currently active, we use a fixed scilifelab image.
+USE_PROVIDER = -1
 
 
 def clean_text(text):
@@ -20,7 +24,7 @@ def clean_text(text):
 
 def ensure_image(raw):
     # raw is raw json
-    # which provider to use? 
+    # which provider to use? See global USE_PROVIDER
 
     try:
       image_name = raw["content_providers"][USE_PROVIDER]["image_file_name"]
@@ -48,12 +52,14 @@ def ensure_image(raw):
     return image_name
 
 def fetch_courses(url):
-  # Get the 
+  # Get the course information as json
   response = requests.get(url)
   response.raise_for_status()
   return response.json()
 
 def transform_course(harvest_data):
+    # harvest_data is a course in json from harvest site
+    # return tupple json course description we can use & ID 
     mapper = TopicMapper(defaults.TOPIC_MAPPINGS_FILE)
 
     course_data = {}
@@ -84,6 +90,7 @@ def transform_course(harvest_data):
     return course_data, harvest_data["slug"]
 
 def write_course(course, filepath):
+    # write the course to an md file
     course["layout"]="course.njk"
     course["tags"]="courses"
 
@@ -117,6 +124,10 @@ def write_course(course, filepath):
   
 def main():
     raw_courses = fetch_courses(HARVEST_URL)
+    target_dir = defaults.COURSES_DIR / "SciLifeLab"
+
+    if not os.path.exists(target_dir):
+      os.makedirs(target_dir)
 
     transformed = []
 
@@ -132,7 +143,7 @@ def main():
         transformed.append(course)
 
         filename = slug + ".md"
-        filepath = defaults.COURSES_DIR / filename
+        filepath = target_dir / filename
         write_course(course, filepath)
 
 if __name__ == "__main__":

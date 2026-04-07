@@ -11,7 +11,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = PROJECT_ROOT / "src"
 SRC_DATA_DIR = SRC_DIR / "_data"
 COURSES_DIR = SRC_DIR / "courses"
-GENERATED_DIR = COURSES_DIR / "generated" / "scilifelab"
 IMAGES_DIR = SRC_DIR / "images"
 
 # Harvesting 
