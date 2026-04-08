@@ -9,7 +9,6 @@ Here you will find a selection of courses about research data management and rel
 <hr>
  
 <style>
-
 .topic-course-grid {
   display: grid;
   grid-template-columns: repeat(3, 300px);
@@ -18,16 +17,15 @@ Here you will find a selection of courses about research data management and rel
   justify-content: start;
 }
 
-
 .course-card {
   width: 100%;
   height: 430px;
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  display: block;
+  overflow: hidden;
+  display: block;                 /* key change */
+  flex-direction: row;           /* image + content side by side */
   background: white;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -35,19 +33,28 @@ Here you will find a selection of courses about research data management and rel
 .course-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
-  overflow-y: auto;
 }
 
+/* Image on the left */
 .course-card img {
   display: block;
-  width: 100%;
+  width: 100%;                 /* fixed width */
+  height: 100px;
   object-fit: contain;
+  object-position: left center; /* keeps image anchored left inside box */
   background-color: #eee;
-}
-.course-content {
-  padding: 0.75rem 1rem 1rem 1rem;
+    /* flex-shrink: 0;  */             /* prevents squishing */
+  /* margin: 0.75rem 0 0 0.75rem;  */  /* gives it some breathing room */
+  padding: 0.5rem;
+  box-sizing: border-box;
 }
 
+/* Content fills remaining space */
+.course-content {
+  padding: 0.75rem 1rem 1rem 1rem;
+  flex: 1;                      /* take remaining width */
+  min-width: 0;                 /* prevents overflow issues */
+}
 .course-content h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
