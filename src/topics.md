@@ -121,7 +121,7 @@ Here you will find a selection of courses about research data management and rel
       
       <div
         class="course-card js-clickable-card"
-        data-href="/topics/{{ topic.slug }}/#course-{{ course.fileSlug }}"
+        data-href="{{ '/topics/' | append: topic.slug | append: '/' | url }}#course-{{ course.fileSlug }}"
         tabindex="0"
         role="link"
         aria-label="Go to {{ course.data.title }}"
