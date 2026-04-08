@@ -17,6 +17,13 @@ Here you will find a selection of courses about research data management and rel
   justify-content: start;
 }
 
+.topic-course-grid_flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
 .course-card {
   width: 100%;
   height: 430px;
@@ -24,16 +31,18 @@ Here you will find a selection of courses about research data management and rel
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
-  display: block;                 /* key change */
-  flex-direction: row;           /* image + content side by side */
+  display: block;
   background: white;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
 
-.course-card:hover {
+.course-card:hover,
+.course-card:focus {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
+
 
 /* Image on the left */
 .course-card img {
@@ -49,11 +58,13 @@ Here you will find a selection of courses about research data management and rel
   box-sizing: border-box;
 }
 
+
 /* Content fills remaining space */
 .course-content {
   padding: 0.75rem 1rem 1rem 1rem;
   flex: 1;                      /* take remaining width */
   min-width: 0;                 /* prevents overflow issues */
+  overflow: hidden;
 }
 .course-content h3 {
   margin: 0 0 0.5rem 0;
@@ -71,8 +82,14 @@ Here you will find a selection of courses about research data management and rel
 
 .course-summary {
   font-size: 0.95rem;
+  overflow: hidden;
 }
-
+/* this next one is important if the summary contains links */
+.course-summary a {
+  pointer-events: none;
+  color: inherit;
+  text-decoration: none;
+}
 .course-summary ul,
 .course-summary ol {
   padding-left: 1.25rem;
@@ -95,31 +112,59 @@ Here you will find a selection of courses about research data management and rel
   }
 }
 </style>
-
 {% for topic in collections.topics %}
   <section>
     <h2><a href="{{ '/topics/' | url }}{{ topic.slug }}/">{{ topic.name }}</a></h2>
-    <!-- <p>{{ topic.courses.length }} course{% if topic.courses.length != 1 %}s{% endif %}</p> -->
 
     <div class="topic-course-grid">
     {%- for course in topic.courses -%}
-      <div class="course-card">
-        <a href="{{ course.url | url }}">
-          <img
-            src="{{ '/images/' | url }}{{ course.data.image }}"
-            alt="{{ course.data.title }}"
-          >
-        </a>
+      
+      <div
+        class="course-card js-clickable-card"
+        data-href="/topics/{{ topic.slug }}/#course-{{ course.fileSlug }}"
+        tabindex="0"
+        role="link"
+        aria-label="Go to {{ course.data.title }}"
+      >
+        <img
+          src="{{ '/images/' | url }}{{ course.data.image }}"
+          alt="{{ course.data.title }}"
+        >
 
         <div class="course-content">
-          <p><a href="{{ course.data.homepage }}"><strong>{{ course.data.title }}</strong></a></p>
-          {{ course.data.summary | renderContent: "md" }}
-          <p><em>Provider:</em> {{ course.data.provider }}<br></p>
+          <p><strong>{{ course.data.title }}</strong></p>
+
+          <div class="course-summary">
+            {{ course.data.summary | renderContent: "md" }}
+          </div>
+
+          <p><em>Provider:</em> {{ course.data.provider }}</p>
           <p><em>Level:</em> {{ course.data.level }}</p>
         </div>
       </div>
+
     {%- endfor -%}
     </div>
   </section>
   <hr>
 {% endfor %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll(".js-clickable-card");
+
+  cards.forEach(function (card) {
+    card.addEventListener("click", function (event) {
+      if (event.target.closest("a")) return;
+      window.location.href = card.dataset.href;
+    });
+
+    card.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        window.location.href = card.dataset.href;
+      }
+    });
+  });
+});
+</script>

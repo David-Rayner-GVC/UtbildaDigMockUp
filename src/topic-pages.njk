@@ -114,6 +114,10 @@ title: "{{ topic.name }}"
   pointer-events: none;
 }
 
+.course-card:target {
+  box-shadow: 0 0 0 3px rgba(0, 94, 165, 0.25);
+}
+
 .course-summary ul,
 .course-summary ol {
   padding-left: 1.25rem;
@@ -183,18 +187,16 @@ title: "{{ topic.name }}"
 
 <div class="topic-course-grid">
   {% for course in topic.courses %}
-    <article class="course-card js-course-card">
-      <a href="{{ course.url | url }}">
+    <article class="course-card js-course-card" id="course-{{ course.fileSlug }}">
         <img
           src="{{ '/images/' | url }}{{ course.data.image }}"
           alt="{{ course.data.title }}"
         >
-      </a>
 
       <div class="course-content">
         <div class="course-details js-course-details">
           <h2>
-            <a href="{{ course.url | url }}">{{ course.data.title }}</a>
+            {{ course.data.title }}  <a href="{{ course.data.homepage }}">=></a>
           </h2>
 
           <div class="course-summary">
@@ -255,12 +257,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateCardState(card);
 
-    button.addEventListener("click", function () {
-      const expanded = card.classList.toggle("expanded");
-      button.textContent = expanded ? "Show less" : "Show more";
-      button.setAttribute("aria-expanded", expanded ? "true" : "false");
-    });
+    if (button) {
+      button.addEventListener("click", function () {
+        const expanded = card.classList.toggle("expanded");
+        button.textContent = expanded ? "Show less" : "Show more";
+        button.setAttribute("aria-expanded", expanded ? "true" : "false");
+      });
+    }
   });
+
+  const hash = window.location.hash;
+
+  if (hash) {
+    const target = document.querySelector(hash);
+
+    if (target && target.classList.contains("js-course-card")) {
+      target.classList.add("expanded");
+
+      const button = target.querySelector(".js-course-toggle");
+      if (button) {
+        button.textContent = "Show less";
+        button.setAttribute("aria-expanded", "true");
+      }
+
+      requestAnimationFrame(function () {
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      });
+    }
+  }
 
   window.addEventListener("resize", function () {
     cards.forEach(updateCardState);
