@@ -2,4 +2,5 @@ _site/
 node_modules/
 __pycache__/
 src/courses/SciLifeLab/
+Pipfile
 

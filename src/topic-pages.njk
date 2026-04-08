@@ -50,9 +50,9 @@ title: "{{ topic.name }}"
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: white;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -60,7 +60,10 @@ title: "{{ topic.name }}"
 .course-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
-  overflow-y: auto;
+}
+
+.course-card.expanded {
+  height: auto;
 }
 
 .course-card img {
@@ -69,10 +72,15 @@ title: "{{ topic.name }}"
   height: 200px;
   object-fit: contain;
   background-color: #eee;
+  flex-shrink: 0;
 }
 
 .course-content {
   padding: 0.75rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .course-content h2 {
@@ -84,9 +92,53 @@ title: "{{ topic.name }}"
   margin: 0 0 0.5rem 0;
 }
 
+.course-details {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.course-card.expanded .course-details {
+  overflow: visible;
+}
+
+.course-card.needs-toggle:not(.expanded) .course-details::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5rem;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+  pointer-events: none;
+}
+
 .course-summary ul,
 .course-summary ol {
   padding-left: 1.25rem;
+}
+
+.course-card-toggle {
+  display: none;
+  align-self: flex-start;
+  margin-top: 0.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #005ea5;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.course-card.needs-toggle .course-card-toggle {
+  display: inline;
+}
+
+.course-card-toggle:hover,
+.course-card-toggle:focus {
+  text-decoration: none;
 }
 
 @media (max-width: 800px) {
@@ -96,6 +148,15 @@ title: "{{ topic.name }}"
 
   .topic-header img {
     max-width: 100%;
+  }
+
+  .topic-course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-card img {
+    width: 100%;
+    height: 200px;
   }
 }
 </style>
@@ -122,7 +183,7 @@ title: "{{ topic.name }}"
 
 <div class="topic-course-grid">
   {% for course in topic.courses %}
-    <div class="course-card">
+    <article class="course-card js-course-card">
       <a href="{{ course.url | url }}">
         <img
           src="{{ '/images/' | url }}{{ course.data.image }}"
@@ -131,21 +192,79 @@ title: "{{ topic.name }}"
       </a>
 
       <div class="course-content">
-        <h2>
-          <a href="{{ course.url | url }}">{{ course.data.title }}</a>
-        </h2>
+        <div class="course-details js-course-details">
+          <h2>
+            <a href="{{ course.url | url }}">{{ course.data.title }}</a>
+          </h2>
 
-        <div class="course-summary">
-          {{ course.data.summary | renderContent("md") | safe }}
+          <div class="course-summary">
+            {{ course.data.summary | renderContent("md") | safe }}
+          </div>
+
+          <p><em>Provider:</em> {{ course.data.provider }}</p>
+          <p><em>Level:</em> {{ course.data.level }}</p>
+
+          {% if course.data.homepage %}
+            <p><a href="{{ course.data.homepage }}">Course homepage</a></p>
+          {% endif %}
         </div>
 
-        <p><em>Provider:</em> {{ course.data.provider }}</p>
-        <p><em>Level:</em> {{ course.data.level }}</p>
-
-        {% if course.data.homepage %}
-          <p><a href="{{ course.data.homepage }}">Course homepage</a></p>
-        {% endif %}
+        <button
+          class="course-card-toggle js-course-toggle"
+          type="button"
+          aria-expanded="false"
+        >
+          Show more
+        </button>
       </div>
-    </div>
+    </article>
   {% endfor %}
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll(".js-course-card");
+
+  function updateCardState(card) {
+    const details = card.querySelector(".js-course-details");
+    const button = card.querySelector(".js-course-toggle");
+
+    if (!details || !button) return;
+
+    const wasExpanded = card.classList.contains("expanded");
+
+    if (wasExpanded) {
+      card.classList.remove("expanded");
+    }
+
+    card.classList.remove("needs-toggle");
+    button.style.display = "none";
+
+    if (details.scrollHeight > details.clientHeight + 2) {
+      card.classList.add("needs-toggle");
+      button.style.display = "";
+    }
+
+    if (wasExpanded) {
+      card.classList.add("expanded");
+    }
+  }
+
+  cards.forEach(function (card) {
+    const button = card.querySelector(".js-course-toggle");
+
+    updateCardState(card);
+
+    button.addEventListener("click", function () {
+      const expanded = card.classList.toggle("expanded");
+      button.textContent = expanded ? "Show less" : "Show more";
+      button.setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+  });
+
+  window.addEventListener("resize", function () {
+    cards.forEach(updateCardState);
+  });
+});
+</script>
+
