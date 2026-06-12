@@ -25,9 +25,9 @@ class TopicMapper:
         return text.strip().lower()
 
     def map(self, keywords):
-        """Return list of matching topic ids (or None if no match)"""
+        """Return list topic ids that are matches for the provided keywords about a course ([] if no match)"""
         if not keywords:
-            return None
+            return []
 
         matched_ids = []
 
@@ -35,8 +35,8 @@ class TopicMapper:
           norm_kw = self._normalize(kw)
 
           for term, topic_id in self.term_to_id.items():
-            if term in norm_kw:
+            if term == norm_kw:
                 if topic_id not in matched_ids:
                     matched_ids.append(topic_id)
 
-        return matched_ids if matched_ids else None
+        return matched_ids

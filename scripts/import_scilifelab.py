@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 import yaml
 
 # url to harvest metadata for all courses
-HARVEST_URL = "https://training.scilifelab.se/events.json"
+HARVEST_URL = "https://training.scilifelab.se/events.json?page_size=999"
 
 # There can be multiple providers each with their own image, but
 # we can only use one. This is the index to use (-1 is last, 0 is first)
@@ -63,8 +63,11 @@ def transform_course(harvest_data):
     mapper = TopicMapper(defaults.TOPIC_MAPPINGS_FILE)
 
     course_data = {}
-    course_data["topics"] = mapper.map(harvest_data["keywords"])
+    # match topics from both keywords and title
+    course_data["topics"] = keyword_ids = mapper.map(harvest_data["keywords"] + harvest_data["title"].split())
     course_data["title"] = harvest_data["title"]
+
+    #print(course_data["title"] + "->" + ",".join(harvest_data["keywords"]))
 
     providers = harvest_data.get("content_providers", [])
 
@@ -136,6 +139,8 @@ def main():
 
         if not course.get("topics"):
             continue
+
+        print(course["title"] + ":" + ",".join(course["topics"]))
         
         #course["image"] = ensure_image(raw)
         course["image"] = "SciLifeLab_Logotype_Green.png"

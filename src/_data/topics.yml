@@ -8,6 +8,12 @@
   name: FAIR Data
   summary: Make research data findable, accessible, interoperable, and reusable.
   image: fair-data-intro.jpg
+  visible: false
+ 
+- id: machine-learning
+  name: Machine Learning and AI
+  summary: Use machine learning methods and workflows.
+  image: machine-learning.png
   visible: true
 
 - id: open-science

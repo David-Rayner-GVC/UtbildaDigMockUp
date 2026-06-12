@@ -17,6 +17,12 @@
   }, {
     "id":"reproducible-research",
     "terms":["Reproducible research"]
+  }, {
+    "id":"machine-learning",
+    "terms":["machine learning", "artificial intelligence", "AI"]
+  }, {
+    "id":"r-programming",
+    "terms":["R", "r-programming", "RStudio"]
   }
 ]
 
